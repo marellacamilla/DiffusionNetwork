@@ -50,14 +50,14 @@ class Markov_Graph:
         
      def initialize(self) : 
          """
-         
+         The function returns the starting point of the simulation,
+         the first node where we consider the walker.
 
          Returns
          -------
          initial_node : int
              
-         The function returns the starting point of the simulation,
-         the first node where we consider the walker.
+         
 
          """
         
@@ -71,7 +71,16 @@ class Markov_Graph:
     
      def sim_step(self, current_node):
          """
+         For each step of the simulation:
          
+         If the process is not Markovian (not_markov = True) the walker can go only on states different from  the last_visited_node.
+        
+        
+         If the process is markovian (not_markov = False) the simulation 
+         can proceed to any node.
+         The next_node is chosen randomly in the list of the nodes of the graph.
+         The number of steps of the simulation is incremented by one.
+         The number of times the walker has been in the node = next_node is incremented by one
 
          Parameters
          ----------
@@ -84,16 +93,7 @@ class Markov_Graph:
              The next node the walker goes to.
              
              
-        For each step of the simulation:
         
-        If the process is not Markovian (not_markov = True) the walker can go only on states different from  the last_visited_node.
-       
-       
-        If the process is markovian (not_markov = False) the simulation 
-        can proceed to any node.
-        The next_node is chosen randomly in the list of the nodes of the graph.
-        The number of steps of the simulation is incremented by one.
-        The number of times the walker has been in the node = next_node is incremented by one.
 
          """
          
@@ -130,7 +130,8 @@ class Markov_Graph:
         
      def absorbed(self, current_node):
          """
-         
+         The function evaluates the probability of absorption at the current_node.
+         It returns True if the walker is absorbed, False if it is not.
 
          Parameters
          ----------
@@ -141,8 +142,7 @@ class Markov_Graph:
          -------
          bool
              
-         The function evaluates the probability of absorption at the current_node.
-         It returns True if the walker is absorbed, False if it is not. 
+          
 
          """
          p=self.absorption[current_node]
