@@ -146,19 +146,29 @@ class Markov_Graph:
 
          """
          p=self.absorption[current_node]
-         print("hhhh")
-         print(p)
-        
+         
          prob_absorb = np.random.choice([1,0], 1, [p, 1-p])
-         print("the probability of absorption at this node is:")
-         print(prob_absorb)
+         
          if prob_absorb == 1:
-             print("true")
              return 1
          return 0
 
-        
+     def status(self, current_node):
+         G=Markov_Graph(self.trans_m, self.absorption, self.not_markov, self.starting_p)
+         current_node = G.initialize()
+         for i in range(20):
+             if G.absorbed(current_node):
+                 
+                  current_node = G.initialize() #if the walker is absorbed the simulation is reinitialized
+             continue
+             current_node = G.sim_step(current_node)
+             
+             
+         return G.visited_nodes
 
-
+     def norm_status(self, status):
+         return print(status/self.steps)
+    
+    
 
     
