@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 class Markov_Graph:
-     """ Class which identifies a random walk on a Markov graph """
+     """ Class which identifies a random walk on a Markov (or Not Markov) graph """
      
      def __init__(self, transition_matrix, absorption, not_markov, starting_p):
         
@@ -31,7 +31,7 @@ class Markov_Graph:
         n_nodes : int
             The number of nodes = the number of rows of the transition matrix
             
-        visited_nodes : int
+        visited_nodes : array
             The number of times the walker has been in each node
             
         steps : int
@@ -48,10 +48,12 @@ class Markov_Graph:
         self.not_markov = not_markov
         self.starting_p = starting_p
         
-     def initialize(self) : 
+     def initialize(self, initial_node) : 
          """
          The function returns the starting point of the simulation,
          the first node where we consider the walker.
+         The number of step of the simulation is incremented by one and also the 
+         correspondent value in the arrayof the visited_nodes.
 
          Returns
          -------
@@ -61,9 +63,8 @@ class Markov_Graph:
 
          """
         
-         initial_node = np.random.choice(np.arange(0, self.n_nodes), p=self.starting_p)
-         print("The walker starts at the node:")
-         print(initial_node)
+         #initial_node = np.random.choice(np.arange(0, self.n_nodes), p=self.starting_p)
+         
          self.last_visited_node = initial_node
          self.steps += 1
          self.visited_nodes[initial_node] += 1
@@ -102,22 +103,24 @@ class Markov_Graph:
             
             p=np.array(self.trans_m[current_node])
             
-          
-            next_node = np.random.choice(np.arange(0, self.n_nodes), p=p)
+            p[self.last_visited_node]=0
+            
+            #next_node = np.random.choice(np.arange(0, self.n_nodes), p=p)
             
             
             #list of all the nodes
-            list_nodes=np.arange(0, self.n_nodes) 
+            #list_nodes=np.arange(0, self.n_nodes) 
             
             #list of nodes allowed: we have excluded the last_visited node
-            allw_nodes=np.delete(list_nodes, self.last_visited_node)
+            #allw_nodes=np.delete(list_nodes, self.last_visited_node)
             
             #Transition probabilities of the nodes allowed
-            q=np.delete(p, self.last_visited_node) 
+            q=np.delete(p[self.last_visited_node], 0) 
             #We have added to the probabilities of each nodes the probability of the last_visited_node normalized by the number of nodes available
-            r=q+[p[self.last_visited_node]/(self.n_nodes-1), p[self.last_visited_node]/(self.n_nodes-1)]
+            #r=q+[p[self.last_visited_node]/(self.n_nodes-1), p[self.last_visited_node]/(self.n_nodes-1)]
             
-            next_node=np.random.choice(allw_nodes, p=r)
+            next_node=np.random.choice(np.arange(0, self.n_nodes), p=self.trans_m[current_node])
+            
             return next_node
             
             
@@ -153,22 +156,9 @@ class Markov_Graph:
              return 1
          return 0
 
-     def status(self, current_node):
-         G=Markov_Graph(self.trans_m, self.absorption, self.not_markov, self.starting_p)
-         current_node = G.initialize()
-         for i in range(20):
-             if G.absorbed(current_node):
-                 
-                  current_node = G.initialize() #if the walker is absorbed the simulation is reinitialized
-             continue
-             current_node = G.sim_step(current_node)
-             
-             
-         return G.visited_nodes
+     
+        
 
-     def norm_status(self, status):
-         return print(status/self.steps)
-    
-    
+
 
     
