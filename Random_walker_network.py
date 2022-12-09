@@ -63,7 +63,6 @@ class Markov_Graph:
 
          """
         
-         #initial_node = np.random.choice(np.arange(0, self.n_nodes), p=self.starting_p)
          
          self.last_visited_node = initial_node
          self.steps += 1
@@ -73,15 +72,17 @@ class Markov_Graph:
      def sim_step(self, current_node):
          """
          For each step of the simulation:
-         
-         If the process is not Markovian (not_markov = True) the walker can go only on states different from  the last_visited_node.
-        
+ 
         
          If the process is markovian (not_markov = False) the simulation 
          can proceed to any node.
-         The next_node is chosen randomly in the list of the nodes of the graph.
+         The next_node is chosen randomly in the list of the nodes of the graph, 
+         the weight is the row of the transition matrix corresepondent to the current_node.
          The number of steps of the simulation is incremented by one.
-         The number of times the walker has been in the node = next_node is incremented by one
+         The number of times the walker has been in the node = next_node is incremented by one.
+         
+         If the process is not Markovian (not_markov = True) the walker can go only on states different from  the last_visited_node.
+         The porbability of transition to the last_visited_node is set as zero. Then the procedure is the same as described in the previous case.
 
          Parameters
          ----------
@@ -98,38 +99,27 @@ class Markov_Graph:
 
          """
          
-
+         p=np.array(self.trans_m[current_node, :].todense())[0]
+         
+         #if np.sum(p)==0: #check if p == 0
+         #   return self.initialize(current_node)
+         
+          
          if self.not_markov:
-            
-            p=np.array(self.trans_m[current_node])
-            
+            p=np.array(self.trans_m[current_node, :].todense())[0]
             p[self.last_visited_node]=0
             
-            #next_node = np.random.choice(np.arange(0, self.n_nodes), p=p)
-            
-            
-            #list of all the nodes
-            #list_nodes=np.arange(0, self.n_nodes) 
-            
-            #list of nodes allowed: we have excluded the last_visited node
-            #allw_nodes=np.delete(list_nodes, self.last_visited_node)
-            
-            #Transition probabilities of the nodes allowed
-            q=np.delete(p[self.last_visited_node], 0) 
-            #We have added to the probabilities of each nodes the probability of the last_visited_node normalized by the number of nodes available
-            #r=q+[p[self.last_visited_node]/(self.n_nodes-1), p[self.last_visited_node]/(self.n_nodes-1)]
-            
-            next_node=np.random.choice(np.arange(0, self.n_nodes), p=self.trans_m[current_node])
-            
+            next_node=np.random.choice(np.arange(0, self.n_nodes), p=p)
             return next_node
             
             
          else:
-            next_node = np.random.choice(np.arange(0, self.n_nodes), p=self.trans_m[current_node,:])
-            self.last_visited_node = next_node
-            self.steps += 1
-            self.visited_nodes[next_node] += 1
-            return next_node
+             
+             next_node =random.choices(np.arange(0, self.n_nodes), weights=p, k=1)
+             self.last_visited_node = next_node
+             self.steps += 1
+             self.visited_nodes[next_node] += 1
+             return next_node
         
      def absorbed(self, current_node):
          """
