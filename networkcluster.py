@@ -19,14 +19,10 @@ from scipy.cluster import hierarchy
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-N=nx.karate_club_graph()
-absorption_prob=0.4
-process_type = "Markov"
-    
 
 def trans_matrix(N):
     """
-    This function calculates the transition matrix associated to the network
+    This function calculates the transition matrix associated to the network N.
 
     Parameters
     ----------
@@ -43,13 +39,9 @@ def trans_matrix(N):
     A=nx.adjacency_matrix(N)
     trans_m = normalize(A, norm='l1', axis=1)
     return trans_m
+ 
 
-trans_m = trans_matrix(N)  
-n_nodes = trans_m.shape[0] 
-absorption = np.ones(n_nodes)*absorption_prob 
-visited_nodes = np.array([0 for i in range(n_nodes)])  
-
-def initialize(initial_node):
+def initialize(initial_node, visited_nodes):
     """
     This function registers the initial position of the walker, incrementing by 
     one the number of times the walker has been in that node in the 
@@ -58,36 +50,47 @@ def initialize(initial_node):
     Parameters
     ----------
     initial_node : int
-        It is the starting point of the simulation, where the walker is at the 
+        It is the starting point, where the walker is at the 
         beginning.
+        
+    visited_nodes : array
+        Each entry defines the number of times the walker has been in each node.
 
     Returns
     -------
     initial_node : int
         
 
-    """
+    """  
+    
     visited_nodes[initial_node] += 1
     return initial_node
 
-def sim_step(current_node):
+def sim_step(current_node, process_type, trans_m, visited_nodes):
     """
     This function, given the current position of the walker, defines where the 
-    walker will jump, so the next_node of the walk. 
+    walker will jump, so the next_node of the walk, and increases by 
+    one the number of times the walker has been in that node in the 
+    visited_nodes array.
+    
 
     Parameters
     ----------
     current_node : int
         The node where the walker is.
-
+    process_type : string
+        This tells if the process is Markovian or not.
+    visited_nodes : array
+        The number of times the walker has been in each node.
+    trans_m : sparse._csr.csr_matrix
+       Transition matrix
+       
     Returns
     -------
     next_node : int
         The node where the walker will jump.
 
     """
-    
-    
     
     p=np.array(trans_m[current_node, :].todense()).ravel()
     
@@ -97,19 +100,23 @@ def sim_step(current_node):
         return next_node
     else:
         p[current_node]=0
-        next_node=np.random.choice(np.arange(0,trans_m.shape[0]), p=p)
+        next_node=random.choices(np.arange(0,trans_m.shape[0]), weights=p, k=1)
         visited_nodes[next_node] += 1
         return next_node
     
-def absorbed(current_node):
+def absorbed(absorption_prob, current_node, trans_m):
     """
     The function evaluates the probability of absorption at the current_node.
     It returns True if the walker is absorbed, False if it is not.
 
     Parameters
     ----------
+   absorption_prob: float
+      The probability that the walker is absorbed in that node.
     current_node : int
         The node where the walker is.
+    trans_m : sparse._csr.csr_matrix
+       Transition matrix
 
     Returns
     -------
@@ -119,22 +126,33 @@ def absorbed(current_node):
 
     """
     
-    p=absorption[current_node]
-    prob_absorb = np.random.choice([1,0], 1, [p, 1-p])
-    if prob_absorb == 1:
+    
+    absorption =random.choices([1,0], weights= [absorption_prob, 1-absorption_prob], k=1 )
+    if absorption[0] == 1:
         return 1
     return 0
 
-def simulation(initial_node):
+def simulation(initial_node, steps, process_type, absorption_prob, trans_m):
     """
     This function checks if the walker is absorbed in the node where it is.
     If it is absorbed, it will return in the initial position, otherwise the function 
-    sim_step will evaluate the the next node of the diffusion.
+    sim_step will evaluate the next node of the diffusion.
+    If the process is not Markovian then the trasition probability at the current node is set to 0.
+    The walker cannot return where it just was.
 
     Parameters
     ----------
     initial_node : int
         The initial node of the simulation.
+    steps : int
+        The number of steps that the walker does.
+    process_type: string
+        This tells if the process is Markovian or not.
+    absorption_prob: float
+       The probability that the walker is absorbed in that node.
+    trans_m : sparse._csr.csr_matrix
+       Transition matrix
+
 
     Returns
     -------
@@ -142,59 +160,84 @@ def simulation(initial_node):
         The number of times the walker has been in each node during the simulation.
 
     """
-    current_node=initialize(initial_node) #to mark that the node has been in the initial node
-    for i in range(100):
-        if absorbed(current_node):
-            current_node = initialize(initial_node) #If it is absorbed, It will re-start from the initial position
+    visited_nodes=np.array([0 for i in range(trans_m.shape[0])])
+    current_node=initialize(initial_node, visited_nodes) #to mark that the node has been in the initial node
+    for i in range(steps):
+        if absorbed(absorption_prob, current_node, trans_m)==1:
+            current_node = initialize(initial_node, visited_nodes) #If it is absorbed, It will re-start from the initial position
         else:
-            current_node =sim_step(current_node)
+            current_node =sim_step(current_node, process_type, trans_m, visited_nodes)
     return visited_nodes
 
 
-def random_walk():
+def random_walk(it, steps, process_type, absorption_prob, trans_m):
     """
     The function performs the simulation considering each node of the network
-    as the initial_node. 
+    as the initial_node.
+    The simulation is repeated it times and the averages of the outcomes are calculated. 
+
+    Parameters
+    ----------
+    it : int
+        The number of times the simulation is repeated for each staring point 
+        for calculating the average values of the outcomes.
+    steps : int
+        The number of steps that the walker does.
+    process_type: string
+        This tells if the process is Markovian or not.
+    absorption_prob: float
+        The probability that the walker is absorbed in that node.
+    trans_m : sparse._csr.csr_matrix
+        Transition matrix
 
     Returns
     -------
-    vec : array
-        A matrix, in which each row is the outcomes of the simulation function 
-        considering as the intiial node the one corresponding to the numer of that row.
+    vec : ndarray
+        A matrix, in which each row is the outcome of the simulation function 
+        considering as the intiial node the one corresponding to the number of that row, 
+        averaged over the number of simulations.
 
     """
-    vec=np.zeros([n_nodes, n_nodes], float)
-    for i in range(n_nodes):
+
+    
+    vec=np.zeros([trans_m.shape[0], trans_m.shape[0]], float)
+    for i in range(trans_m.shape[0]):
         initial_node=i
-        for k in range(100):   
-            entrances=simulation(initial_node)
+        for k in range(it):   
+            entrances=simulation(initial_node, steps, process_type, absorption_prob, trans_m)
             
             sum_entrances =+ entrances 
             
             
-        mean_entrances = sum_entrances/100
+        mean_entrances = sum_entrances/it
         
         vec[i] = mean_entrances
     
     return vec
     
-def linkage_matrix():
+def linkage_matrix(data):
     """
-    
+    The function computes the distance matrix (Euclidian distance) and 
+    the Linkage matrix using the method 'Ward'. 
+
+    Parameters
+    ----------
+    data : ndarray
+        Outcome of the function random_walk(it, steps, process_type, absorption_prob, trans_m)
+
 
     Returns
     -------
-    Z : array
+    Z : ndarray
         The linkage matrix of the hierarchical clustering.
 
     """
-    data=random_walk()
+    
     Y = pdist(data, 'euclidean')
-    #Let's create the linkage matrix and the dendogram
     Z = linkage(Y, 'ward', optimal_ordering=True)    
     return Z
 
-def plot_dendogram(t):
+def plot_dendogram(t, link_m):
     """
     This function generates the dendogram which represents the hierarchical clustering
 
@@ -202,19 +245,20 @@ def plot_dendogram(t):
     ----------
     t : int
         Threshold of the hierarchical clustering.
+    link_m : linkage_matrix(it, steps, process_type, absorption_prob, trans_m)
 
     Returns
     -------
     The dendrogram.
 
     """
-    link_m=linkage_matrix(t)
+    
     fig = plt.figure(figsize=(25, 10))
     dn = dendrogram(link_m, show_leaf_counts=True)
     plt.axhline(y = t, color = 'r', linestyle = '-')
     plt.show() 
     
-def clustering(t):
+def clustering(t, link_m):
     """
     This function calculates the flat clusters from the hierarchical clustering
     defined by the given linkage matrix
@@ -223,6 +267,8 @@ def clustering(t):
     ----------
     t : int
         Threshold of the hierarchical clustering.
+    link_m : ndarray
+       Linkage_matrix(it, steps, process_type, absorption_prob, trans_m)
 
     Returns
     -------
@@ -232,11 +278,11 @@ def clustering(t):
         node belongs to.
 
     """
-    link_m=linkage_matrix(t)
+    
     X=fcluster(link_m, t=t, criterion='distance', depth=2, R=None, monocrit=None)
     return X
 
-def plot_clustering(t):
+def plot_clustering(N, t, X, trans_m):
     """
     This function generates the plot of the network, highlighting the nodes 
     with different colors according to the clusters they belong to.
@@ -245,23 +291,25 @@ def plot_clustering(t):
     ----------
     t : int
         Threshold of the hierarchical clustering.
+    X : array
+        clustering(t, it, steps, process_type, absorption_prob, trans_m)
 
     Returns
     -------
     Plot.
 
     """
-    color=('red', 'green', 'yellow', 'blue', 'purple', 'pink', 'white')
-    X=clustering(t)
+    color=('red', 'blue', 'yellow', 'green', 'purple', 'pink', 'white')
+    
     k=max(X)
     color_map=[]
     for s in range(1,k+1):
-         for i in range(n_nodes):
+         for i in range(trans_m.shape[0]):
              if X[i]==s:
                  color_map.append(color[s])
              continue
          
-    initial_pos=list(N.nodes)
-    layout_pos = nx.circular_layout(N)        
+
+    layout_pos = nx.spring_layout(N)        
     nx.draw(N, pos=layout_pos, node_color=color_map, with_labels=True)
     plt.show()
