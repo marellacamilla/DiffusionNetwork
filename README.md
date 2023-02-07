@@ -26,7 +26,8 @@ N= nx.karate_club_graph()
 trans_m = nc.trans_matrix(N)
 nc.random_walk(10, 100, "Markov", 0.4, trans_m)
 ```
-```shell
+```python
+Out[7]:
 array([[4.3, 0.5, 0.6, ..., 0.2, 0.3, 0.3],
        [1. , 4.6, 0.9, ..., 0. , 0.2, 0.3],
        [0.8, 0.9, 3.8, ..., 0.3, 0.4, 0.8],
@@ -34,4 +35,13 @@ array([[4.3, 0.5, 0.6, ..., 0.2, 0.3, 0.3],
        [0.4, 0.1, 0.1, ..., 4.7, 0.7, 0.7],
        [0. , 0.2, 0.2, ..., 0.3, 3.6, 1.9],
        [0.2, 0. , 0.2, ..., 0.4, 1.3, 5.3]])
+```
+# How to do clustering
+The algorithm proposed allows to:
+* Compute the linkage matrix (**link_m**), with *linkage_matrix(**data**)* function, where as **data** you have to insert the output of the *random_walk* function (like Out[7]); 
+* Represent the agglomerative hierarchical clustering with a dendogram ( *plot_dendogram(t, link_m)*), drawing an horizontal line at hegiht **t** to form then the flat clusters and determine the number of clusters; 
+```python
+data = Out[7]
+link_m = nc.linkage_matrix(data)
+nc.plot_dendogram(11, link_m) # the distance threshold at which the dendogram is cut is 11
 ```
