@@ -45,3 +45,23 @@ data = Out[7]
 link_m = nc.linkage_matrix(data)
 nc.plot_dendogram(11, link_m) # the distance threshold at which the dendogram is cut is 11
 ```
+![dendogram](/readme_images/dendo.png)
+
+* form flat clusters, according to the threshold **t**, with the function *clustering(**t**, **link_m**)*, you can print the cluster to which each node belongs and determine the number of clusters formed;
+```python
+clusters = nc.clustering(11, link_m)
+n = max(clusters)
+
+print(clusters)
+print(n)
+```
+```python
+[2 2 2 2 2 2 2 2 1 1 2 2 2 2 1 1 2 2 1 2 1 2 1 1 1 1 1 1 1 1 1 1 1 1]
+2
+```
+* visualize the partition into clusters on the network, with the function *plot_clustering(**N**,**t**, **X** ,**trans_m**)*.
+```python
+nc.plot_clustering(N, 11, clusters, trans_m)
+
+```
+![network](/readme_images/net.png)
