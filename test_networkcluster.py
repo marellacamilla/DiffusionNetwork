@@ -137,7 +137,7 @@ def test_simulation_absorption_prob_one():
     
     
    
-def test_stationary_distribution(steps):
+def test_stationary_distribution():
     """
     Considering a simple network made of three nodes, the function comuptes the stationary 
     distribution like an iterative product between the transition matrix and the initial distribution [1, 0, 0].
@@ -170,7 +170,7 @@ def test_stationary_distribution(steps):
     absorption_prob=0
     process_type="Markov"
     initial_node=0
-    
+    steps= 50
     random.seed(0)
     #stationary distribution: normalized number of times the walekr has been in each node.
     s_state=nc.simulation(initial_node, steps, process_type, absorption_prob, trans_m)/steps
