@@ -1,6 +1,6 @@
 # DiffusionNetwork
 
-The following code simulates a diffusion on a Network, performing a random walk and provides an algorithm which allows you to do an agglomerative hierarchical clustering, plot dendograms and plot your network divided into clusters. All the functions needed are in the *networkcluster.py* file. 
+The aim of this project is to simulate a diffusion process on a Network, through a random walk. It contains also an algorithm which allows to do an agglomerative hierarchical clustering of the data, plot dendograms and plot your network divided into clusters. All the functions needed are in the *networkcluster.py* file. 
 
 
 # How to perform a Random Walk
@@ -9,10 +9,10 @@ on networks.
 1. You have to provide a network **N** and calculate the transition matrix using the function *transition_matrix(**N**)*;
 2. You have to decide where the walker will start its walk (**initial_node**);
 3. You have to decide the number of steps the walker will do (**steps**);
-4. You have to decide the **process_type** : if it is Markovian, you write "*Markov*", if you write something different the code will consider the process non Markovian and so it will set the trasition probability at the current node to 0, so that the walker cannot return where it just was;
+4. You have to decide the **process_type** : if it is Markovian, you write "*Markov*", if you write something different the code will consider the process non Markovian and  it will set the trasition probability at the current node to 0, so that the walker cannot return where it just was;
 5. You have to fix the probability that the walker is absorbed in each node (**abs_prob**);
 6. You use the function *simulation(initial_node, steps, process_type, absorption_prob, trans_m)* to get the number of time the walker has been in each node (**visited_nodes**);
-7. To repeat this process starting form each node of your network, use the function *random_walk(it, steps, process_type, absorption_prob, trans_m)*. This fucntion repeats also the process **it** times and calculates the average of the outcomes. 
+7. To repeat this process starting from each node of your network, use the function *random_walk(it, steps, process_type, absorption_prob, trans_m)*. This fucntion repeats also the process **it** times and calculates the average of the outcomes. 
 
 For example, a Random Walk on the Karate Club Graph of the library *NetworkX* following these steps results in: 
 
@@ -39,7 +39,7 @@ array([[4.3, 0.5, 0.6, ..., 0.2, 0.3, 0.3],
 # How to do clustering
 The algorithm proposed allows to:
 * Compute the linkage matrix (**link_m**), with *linkage_matrix(**data**)* function, where as **data** you have to insert the output of the *random_walk* function (like Out[7]); 
-* Represent the agglomerative hierarchical clustering with a dendogram ( *plot_dendogram(t, link_m)*), drawing an horizontal line at hegiht **t** to form then the flat clusters and determine the number of clusters; 
+* Represent the agglomerative hierarchical clustering with a dendogram ( *plot_dendogram(**t**, **link_m**)*), drawing an horizontal line at hegiht **t** to form then the flat clusters and determine the number of clusters; 
 ```python
 data = Out[7]
 link_m = nc.linkage_matrix(data)
@@ -47,7 +47,7 @@ nc.plot_dendogram(11, link_m) # the distance threshold at which the dendogram is
 ```
 ![dendogram](/readme_images/dendo.png)
 
-* form flat clusters, according to the threshold **t**, with the function *clustering(**t**, **link_m**)*, you can print the cluster to which each node belongs and determine the number of clusters formed;
+* form flat clusters, according to the threshold **t**, with the function *clustering(**t**, **link_m**)*. For example, you can print the cluster to which each node belongs and determine the number of clusters formed;
 ```python
 clusters = nc.clustering(11, link_m)
 n = max(clusters)
