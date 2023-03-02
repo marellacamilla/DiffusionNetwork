@@ -1,15 +1,27 @@
 # DiffusionNetwork
 
-The aim of this project is to simulate a diffusion process on a Network, through a random walk. It contains also an algorithm which allows to do an agglomerative hierarchical clustering of the data, plot dendograms and plot your network divided into clusters. All the functions needed are in the *networkcluster.py* file. 
+The aim of this project is to simulate a diffusion process on a Network, through a random walk. It contains also an algorithm which allows to do an agglomerative hierarchical clustering of the data, plot dendograms and plot your network divided into clusters.
+All the functions needed are in the *networkcluster.py* file. 
 
 # Installation
 
-To install the application clone the repository DiffusionNetwork and use pip:
+To install the application clone the repository DiffusionNetwork:
 ```python
 git clone https://github.com/marellacamilla/DiffusionNetwork
 cd DiffusionNetwork
+```
+
+In order to install the library some other libraries are necessary, so we can install them with:
+```python
 pip install -r requirements.txt
 ```
+Running:
+```python
+!pytest test_networkcluster.py
+```
+
+will execute all test functions inside the test_networkcluster.py file. 
+The library was built and tested with python version 3.9.12.
 
 # How to perform a Random Walk
 A random-walk is the process by which randomly-moving objects wander away from where they started. It describes a path that consists of a succession of random steps on some mathematical space, in our case,
