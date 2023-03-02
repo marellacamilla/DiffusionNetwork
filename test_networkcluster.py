@@ -5,18 +5,11 @@ Created on Tue Oct 11 18:37:28 2022
 @author: Camilla Marella
 """
 import numpy as np
-import scipy
-from hypothesis import given
-import hypothesis.strategies as st
 import pytest
 import networkx as nx 
-from sklearn.preprocessing import normalize
-from scipy.sparse import csr_matrix
 import networkcluster as nc
-from numpy.linalg import eig
 import random
-from hypothesis import given
-import hypothesis.strategies as st
+
 
 
 

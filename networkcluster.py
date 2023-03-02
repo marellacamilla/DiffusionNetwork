@@ -7,16 +7,10 @@ Created on Tue Dec  6 14:28:06 2022
 
 import numpy as np
 import random
-import pandas as pd
 import networkx as nx
 from sklearn.preprocessing import normalize
 from scipy.cluster.hierarchy import dendrogram, linkage
-from scipy.cluster.hierarchy import ward, fcluster
 from scipy.spatial.distance import pdist
-from scipy.cluster.hierarchy import fclusterdata
-from scipy.spatial import distance
-from scipy.cluster import hierarchy
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 
