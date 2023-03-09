@@ -56,6 +56,11 @@ array([[4.3, 0.5, 0.6, ..., 0.2, 0.3, 0.3],
        [0. , 0.2, 0.2, ..., 0.3, 3.6, 1.9],
        [0.2, 0. , 0.2, ..., 0.4, 1.3, 5.3]])
 ```
+With one command line: 
+```python
+python chain.py configurations.txt links_file.csv
+```
+it is possible to perform the random walk and save the output (like Out[7]) in a *.npy* file, indicating all the parameters needed in the *configurations.txt* file. Given the *links_file.csv* the code will automatically build the network.
 # How to do clustering
 The algorithm proposed allows to:
 * Compute the linkage matrix (**link_m**), with *linkage_matrix(**data**)* function, where as **data** you have to insert the output of the *random_walk* function (like Out[7]); 
@@ -85,3 +90,12 @@ nc.plot_clustering(N, 11, clusters, trans_m)
 
 ```
 ![network](/readme_images/network.png)
+With one command line: 
+```python
+python cluster.py configurations.txt
+```
+you will load the data obatined from the random walk process and: 
+* compute the number of clusters; 
+* compute the numer of nodes present in each cluster;
+* plot the dendogram and save it in the location indicated in the configurations.txt file (destination1);
+* plot the clusters on the network and save it where is indicated in the configurations.txt file (destination2).
