@@ -8,8 +8,9 @@ Created on Tue Dec  6 14:28:06 2022
 import numpy as np
 import random
 import networkx as nx
+from sklearn import preprocessing
 from sklearn.preprocessing import normalize
-from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 from scipy.spatial.distance import pdist
 import matplotlib.pyplot as plt
 
@@ -32,6 +33,7 @@ def trans_matrix(N):
     
     A=nx.adjacency_matrix(N)
     trans_m = normalize(A, norm='l1', axis=1)
+    trans_m = A
     return trans_m
  
 

@@ -13,9 +13,6 @@ import random
 
 
 
-
-
-
 def test_all_rows_sum_up_to_one():
     """
     This function tests that the trans_matrix produces a matrix
