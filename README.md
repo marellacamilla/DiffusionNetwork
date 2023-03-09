@@ -90,12 +90,14 @@ nc.plot_clustering(N, 11, clusters, trans_m)
 
 ```
 ![network](/readme_images/network.png)
+
+
 With one command line: 
 ```python
 python cluster.py configurations.txt
 ```
 you will load the data obatined from the random walk process and: 
 * compute the number of clusters; 
-* compute the numer of nodes present in each cluster;
+* compute the number of nodes present in each cluster;
 * plot the dendogram and save it in the location indicated in the configurations.txt file (destination1);
 * plot the clusters on the network and save it where is indicated in the configurations.txt file (destination2).
