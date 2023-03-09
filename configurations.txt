@@ -1,0 +1,10 @@
+[settings]
+it = 10
+steps = 100
+process_type = Markov
+absorption_prob = 0.4
+t = 11
+
+[paths]
+dendo_pic = ./readme_images/dendogram.png
+net_pic = ./readme_images/network.png
